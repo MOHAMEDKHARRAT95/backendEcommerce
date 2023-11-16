@@ -15,20 +15,17 @@ const app = express();
 //BodyParser Middleware
 app.use(express.json());
 
-//connecxion à la base de données
-mongoose.set('strictQuery', true)
-
-const connect = async () => {
-    try {
-    await mongoose.connect(process.env.DATABASECLOUD);
-    console.log("Connected to mongoDB.");
-    } catch (error) {
-    throw error;
-    }
-    };
-    mongoose.connection.on("disconnected", () => {
-    console.log("mongoDB disconnected!");
-    });
+mongoose.set("strictQuery", false);
+// Connexion à la base données
+mongoose.connect(process.env.DATABASECLOUD,{
+useNewUrlParser: true,
+useUnifiedTopology: true
+})
+.then(() => {console.log("Connexion à la base de données réussie");
+}).catch(err => {
+console.log('Impossible de se connecter à la base de données', err);
+process.exit();
+});
     
     app.get("/",(req,res)=>{
     res.send("bonjour");
@@ -40,6 +37,6 @@ app.use('/api/articles', articlesRouter);
 
 
     app.listen(process.env.PORT, () => {
-        connect();
+        
     console.log(`Server is listening on port ${process.env.PORT}`); });
     module.exports = app;
